@@ -3,7 +3,7 @@ import axios from 'axios';
 interface InitArgs {
   apiKey: string;
   environment: string;
-  refreshIntervalMS?: number;
+  refreshIntervalSeconds?: number;
   configUrl?: string;
 }
 
@@ -15,7 +15,7 @@ class Client {
   private config: Config;
   private apiKey?: string;
   private environment: string;
-  private refreshIntervalMS: number;
+  private refreshIntervalSeconds: number;
   private configUrl: string;
 
   static ENVIRONMENTS = ['development', 'staging', 'production'];
@@ -23,18 +23,18 @@ class Client {
   constructor() {
     this.config = {};
     this.configUrl = 'www.happypath.io/dynamic-config';
-    this.refreshIntervalMS = 5000;
+    this.refreshIntervalSeconds = 30;
     this.environment = '';
   }
 
   async init(initArgs: InitArgs): Promise<void> {
-    const { apiKey, environment, refreshIntervalMS, configUrl } = initArgs;
+    const { apiKey, environment, refreshIntervalSeconds, configUrl } = initArgs;
     this.apiKey = apiKey;
     this.environment = environment;
     this.configUrl = configUrl || this.configUrl;
-    this.refreshIntervalMS = refreshIntervalMS || this.refreshIntervalMS;
+    this.refreshIntervalSeconds = refreshIntervalSeconds || this.refreshIntervalSeconds;
     await this.load();
-    setInterval(this.load, this.refreshIntervalMS);
+    setInterval(this.load, this.refreshIntervalSeconds * 1000);
   }
 
   get<T>(key: string, defaultValue?: T): T {

@@ -1,5 +1,7 @@
 # HappyPath - Dynamic Config
 
+Simple dynamic config client.
+
 ## Installation
 
 ### Using NPM
@@ -17,13 +19,18 @@ await dynamicConfig.init({
 })
 ```
 
-### Usage
+## Usage
+
+By default, the client will refresh configuration every 30 seconds. You can override that by passing `refreshIntervalSeconds` during initialization.
+
+Client exposes single methods `get` which accepts `key` and optional default value. It returns corresponding value from its config.
+
 ```
 import dynamicConfig from '@happypath-io/dynamic-config'
 
 const name = dynamicConfig.get<string>('name');
-const isEnabled = dynamicConfig.get<boolean>('isEnabled');
+const isEnabled = dynamicConfig.get<boolean>('isEnabled', false);
 const age = dynamicConfig.get<number>('age');
-const list = dynamicConfig.get<string[]>('items');
+const list = dynamicConfig.get<string[]>('items', ['defaultValue']);
 const person = dynamicConfig.get<Person>('person');
 ```

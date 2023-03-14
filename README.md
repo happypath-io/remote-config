@@ -1,6 +1,7 @@
 # HappyPath - Dynamic Config
 
-Simple dynamic config client.
+Simple dynamic config client. 
+See docs, installation and examples here -> docs.happypath.io
 
 ## Installation
 

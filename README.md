@@ -1,7 +1,8 @@
 # HappyPath - Dynamic Config
 
-Simple dynamic config client. 
-See docs, installation and examples here -> docs.happypath.io
+HappyPath gives developers a simple way to create and manage dynamic configuration files to control any part of your application from the cloud. Host  your own config file, or manage it in the cloud for free on [happypath.io](https://docs.happypath.io)
+
+See docs, installation and examples here: [docs.happypath.io](https://docs.happypath.io)
 
 ## Installation
 

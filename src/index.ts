@@ -1,1 +1,3 @@
-export * from './lib/client';
+import getClient from './lib/client';
+
+export default getClient;

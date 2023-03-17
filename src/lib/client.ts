@@ -9,7 +9,7 @@ export interface InitArgs {
   refreshIntervalSeconds?: number;
   host?: string;
   logger?: (args: any) => void;
-  fetcher: (url: string) => Promise<Response>;
+  fetcher?: (url: string) => Promise<Response>;
 }
 
 interface Config {
@@ -27,16 +27,26 @@ class Client {
 
   constructor(opts: InitArgs) {
     this.config = {};
-    this.host = opts.host || 'www.happypath.io';
-    this.refreshIntervalSeconds = opts.refreshIntervalSeconds || 30;
-    this.apiKey = opts.apiKey;
-    this.logger = opts.logger || console.log;
-    this.fetcher = opts.fetcher || axios.get;
+    const {
+      host = 'https://storage.googleapis.com/happypath-public',
+      refreshIntervalSeconds = 30,
+      apiKey,
+      logger = console.log,
+      fetcher = axios.get,
+    } = opts;
+    if (!apiKey) {
+      throw new Error('Missing API key');
+    }
+    this.host = host;
+    this.refreshIntervalSeconds = refreshIntervalSeconds;
+    this.apiKey = apiKey;
+    this.logger = logger;
+    this.fetcher = fetcher;
   }
 
   async init(): Promise<void> {
     await this.load();
-    setInterval(this.load, this.refreshIntervalSeconds * 1000);
+    setInterval(this.load.bind(this), this.refreshIntervalSeconds * 1000);
   }
 
   get<T>(key: string, defaultValue?: T): T {
@@ -48,10 +58,11 @@ class Client {
     return value;
   }
 
+  getConfig(): Config {
+    return this.config;
+  }
+
   private validateInit(): void {
-    if (!this.apiKey) {
-      throw new Error('Missing API key');
-    }
     if (!this.isConfigLoaded) {
       throw new Error(
         'Config is not initialized. Did you forget to run "await config.init()"?'

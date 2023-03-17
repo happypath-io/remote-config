@@ -22,7 +22,7 @@ class Client {
 
   constructor() {
     this.config = {};
-    this.configUrl = 'www.happypath.io/dynamic-config';
+    this.configUrl = 'www.happypath.io/config';
     this.refreshIntervalSeconds = 30;
     this.environment = '';
   }

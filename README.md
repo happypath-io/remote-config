@@ -1,21 +1,21 @@
-# HappyPath - Dynamic Config
+# HappyPath - Remote Config
 
-HappyPath gives developers a simple way to create and manage dynamic configuration files to control any part of your application from the cloud. Host  your own config file, or manage it in the cloud by creating a free account here: [app.happypath.io](https://app.happypath.io/#auth-sign-up)
+HappyPath gives developers a simple way to create and manage remote configuration files to control any part of your application from the cloud. Host  your own config file, or manage it in the cloud by creating a free account here: [app.happypath.io](https://app.happypath.io/#auth-sign-up)
 
 See docs, installation and examples here: [docs.happypath.io](https://docs.happypath.io)
 
 ## Installation
 
 ### Using NPM
-`npm install @happypath-io/dynamic-config`
+`npm install @happypath-io/remote-config`
 
 ## Configuration
 
 Import & initialize client
 ```
-import dynamicConfig from '@happypath-io/dynamic-config'
+import remoteConfig from '@happypath-io/dynamic-config'
 
-await dynamicConfig.init({
+await remoteConfig.init({
   apiKey: 'YOUR-API-KEY',
   environment: '<development | staging | production>'
 })
@@ -28,11 +28,11 @@ By default, the client will refresh configuration every 30 seconds. You can over
 Client exposes single methods `get` which accepts `key` and optional default value. It returns corresponding value from its config.
 
 ```
-import dynamicConfig from '@happypath-io/dynamic-config'
+import remoteConfig from '@happypath-io/dynamic-config'
 
-const name = dynamicConfig.get<string>('name');
-const isEnabled = dynamicConfig.get<boolean>('isEnabled', false);
-const age = dynamicConfig.get<number>('age');
-const list = dynamicConfig.get<string[]>('items', ['defaultValue']);
-const person = dynamicConfig.get<Person>('person');
+const name = remoteConfig.get<string>('name');
+const isEnabled = remoteConfig.get<boolean>('isEnabled', false);
+const age = remoteConfig.get<number>('age');
+const list = remoteConfig.get<string[]>('items', ['defaultValue']);
+const person = remoteConfig.get<Person>('person');
 ```

@@ -11,11 +11,16 @@ export interface InitArgs {
   host?: string;
   logger?: (args: any) => void;
   fetcher?: (url: string) => Promise<Response>;
+  customRemoteUrl?: string;
+  customFilePath?: string;
+  customConfig?: Config;
 }
 
 interface Config {
   [key: string]: unknown;
 }
+
+type Loader = () => Promise<Config | undefined>;
 
 class Client {
   private config: Config;
@@ -25,19 +30,25 @@ class Client {
   private isConfigLoaded = false;
   private logger: (message: string, error: unknown) => void;
   private fetcher: (url: string) => Promise<Response>;
+  private customFilePath?: string;
+  private customRemoteUrl?: string;
+  private customConfig?: Config;
 
   constructor(opts: InitArgs) {
-    this.config = {};
     const {
       host = 'https://storage.googleapis.com/happypath-public',
       refreshIntervalSeconds = 30,
       apiKey,
       logger = console.log,
       fetcher = axios.get,
+      customConfig,
+      customFilePath,
+      customRemoteUrl,
     } = opts;
-    if (!apiKey) {
-      throw new RemoteConfigError('Missing API key');
-    }
+    this.customFilePath = customFilePath;
+    this.customRemoteUrl = customRemoteUrl;
+    this.customConfig = customConfig;
+    this.config = {};
     this.host = host;
     this.refreshIntervalSeconds = refreshIntervalSeconds;
     this.apiKey = apiKey;
@@ -74,18 +85,51 @@ class Client {
     }
   }
 
-  private async load(): Promise<void> {
-    let response;
-    try {
-      response = await this.fetcher(
+  getLoader(): Loader {
+    if (this.customFilePath) {
+      return () => {
+        const data = require(this.customFilePath!);
+        if (!data) {
+          throw new RemoteConfigError(`Not valid JSON: ${this.customFilePath}`);
+        }
+        return data;
+      };
+    }
+    if (this.customRemoteUrl) {
+      return async () => {
+        const response = await this.fetcher(this.customRemoteUrl!);
+        return response?.data;
+      };
+    }
+    if (this.customConfig) {
+      return () => Promise.resolve(this.customConfig);
+    }
+    return async () => {
+      if (!this.apiKey) {
+        throw new RemoteConfigError(
+          `No API key found. Please go to happypath.io to create one.`
+        );
+      }
+      const response = await this.fetcher(
         `${this.host}/configs/${this.apiKey}/config.json`
       );
+      const data = response?.data;
+      return data;
+    };
+  }
+
+  private async load(): Promise<void> {
+    const loader = this.getLoader();
+    let data;
+    try {
+      data = await loader();
     } catch (error) {
       this.logger('Failed to fetch config', error);
     }
-    const data = response?.data;
     if (!data && !this.isConfigLoaded) {
-      throw new Error(`Invalid API key`);
+      throw new RemoteConfigError(
+        `Could not fetch API config. Visit happypath.io for more details.`
+      );
     }
     if (data) {
       Object.assign(this.config, data);

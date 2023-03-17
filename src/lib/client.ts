@@ -1,16 +1,12 @@
-import axios from 'axios';
+import https from 'https';
 import { RemoteConfigError } from './errors';
-
-interface Response {
-  data?: Record<string, unknown>;
-}
 
 export interface InitArgs {
   apiKey: string;
   refreshIntervalSeconds?: number;
   host?: string;
   logger?: (args: any) => void;
-  fetcher?: (url: string) => Promise<Response>;
+  fetcher?: (url: string) => Promise<Config>;
   customRemoteUrl?: string;
   customFilePath?: string;
   customConfig?: Config;
@@ -29,7 +25,7 @@ class Client {
   private host: string;
   private isConfigLoaded = false;
   private logger: (message: string, error: unknown) => void;
-  private fetcher: (url: string) => Promise<Response>;
+  private fetcher: (url: string) => Promise<Config>;
   private customFilePath?: string;
   private customRemoteUrl?: string;
   private customConfig?: Config;
@@ -40,7 +36,7 @@ class Client {
       refreshIntervalSeconds = 30,
       apiKey,
       logger = console.log,
-      fetcher = axios.get,
+      fetcher = Client.httpGet,
       customConfig,
       customFilePath,
       customRemoteUrl,
@@ -97,8 +93,8 @@ class Client {
     }
     if (this.customRemoteUrl) {
       return async () => {
-        const response = await this.fetcher(this.customRemoteUrl!);
-        return response?.data;
+        const data = await this.fetcher(this.customRemoteUrl!);
+        return data;
       };
     }
     if (this.customConfig) {
@@ -110,10 +106,9 @@ class Client {
           `No API key found. Please go to happypath.io to create one.`
         );
       }
-      const response = await this.fetcher(
+      const data = await this.fetcher(
         `${this.host}/configs/${this.apiKey}/config.json`
       );
-      const data = response?.data;
       return data;
     };
   }
@@ -143,6 +138,20 @@ class Client {
 
   static getClient(opts: InitArgs): Client {
     return new Client(opts);
+  }
+
+  static httpGet(url: string): Promise<Config> {
+    return new Promise((resolve) => {
+      let data = '';
+      https.get(url, (res) => {
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          resolve(JSON.parse(data));
+        });
+      });
+    });
   }
 }
 

@@ -13,11 +13,38 @@ See docs, installation and examples here: [docs.happypath.io](https://docs.happy
 
 Import & initialize client
 ```
-import getClient from '@happypath-io/dynamic-config'
+import getClient from '@happypath-io/remote-config'
 
+// Defaults to happypath.io configurations
 const remoteConfig = getClient({
   apiKey: 'YOUR-API-KEY',
 })
+
+// Use local file
+const remoteConfig = getClient({
+  customFilePath: 'path/to/your/config.json',
+})
+
+// Host your own config
+const remoteConfig = getClient({
+  customRemoteUrl: 'https://example.com/your-config.json',
+})
+
+// Provide config object
+const remoteConfig = getClient({
+  customConfig: {
+    name: 'john doe',
+    age: 30,
+    otherAttributes: {
+      otherLists: [
+        "CA",
+        "MD",
+      ]
+    }
+  }
+})
+
+// Finally, initiallize config. This is an async function.
 await remoteConfig.init()
 ```
 

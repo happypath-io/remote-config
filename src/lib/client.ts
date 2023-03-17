@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { RemoteConfigError } from './errors';
 
 interface Response {
   data?: Record<string, unknown>;
@@ -35,7 +36,7 @@ class Client {
       fetcher = axios.get,
     } = opts;
     if (!apiKey) {
-      throw new Error('Missing API key');
+      throw new RemoteConfigError('Missing API key');
     }
     this.host = host;
     this.refreshIntervalSeconds = refreshIntervalSeconds;
@@ -55,6 +56,9 @@ class Client {
     if (!this.isPresent(value) && this.isPresent(defaultValue)) {
       return defaultValue!;
     }
+    if (!this.isPresent(value)) {
+      throw new RemoteConfigError(`Key is not defined in config: ${key}`);
+    }
     return value;
   }
 
@@ -64,8 +68,8 @@ class Client {
 
   private validateInit(): void {
     if (!this.isConfigLoaded) {
-      throw new Error(
-        'Config is not initialized. Did you forget to run "await config.init()"?'
+      throw new RemoteConfigError(
+        'Config is not initialized. Forgot to run "await config.init()" ?'
       );
     }
   }

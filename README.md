@@ -13,22 +13,22 @@ See docs, installation and examples here: [docs.happypath.io](https://docs.happy
 
 Import & initialize client
 ```
-import remoteConfig from '@happypath-io/dynamic-config'
+import getClient from '@happypath-io/dynamic-config'
 
-await remoteConfig.init({
+const remoteConfig = getClient({
   apiKey: 'YOUR-API-KEY',
-  environment: '<development | staging | production>'
 })
+await remoteConfig.init()
 ```
 
 ## Usage
 
-By default, the client will refresh configuration every 30 seconds. You can override that by passing `refreshIntervalSeconds` during initialization.
+By default, the client will refresh configuration every 30 seconds. You can override that by passing `refreshIntervalSeconds` during client initialization.
 
-Client exposes single methods `get` which accepts `key` and optional default value. It returns corresponding value from its config.
+Client exposes single methods `get` which accepts `key` and optional default value. It returns corresponding value from config store. Note that value is not a promise.
 
 ```
-import remoteConfig from '@happypath-io/dynamic-config'
+import remoteConfig from '@happypath-io/remote-config'
 
 const name = remoteConfig.get<string>('name');
 const isEnabled = remoteConfig.get<boolean>('isEnabled', false);

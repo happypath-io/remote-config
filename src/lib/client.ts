@@ -1,10 +1,15 @@
 import axios from 'axios';
 
-interface InitArgs {
+interface Response {
+  data?: Record<string, unknown>;
+}
+
+export interface InitArgs {
   apiKey: string;
-  environment: string;
   refreshIntervalSeconds?: number;
-  configUrl?: string;
+  host?: string;
+  logger?: (args: any) => void;
+  fetcher: (url: string) => Promise<Response>;
 }
 
 interface Config {
@@ -14,25 +19,22 @@ interface Config {
 class Client {
   private config: Config;
   private apiKey?: string;
-  private environment: string;
   private refreshIntervalSeconds: number;
-  private configUrl: string;
+  private host: string;
+  private isConfigLoaded = false;
+  private logger: (message: string, error: unknown) => void;
+  private fetcher: (url: string) => Promise<Response>;
 
-  static ENVIRONMENTS = ['development', 'staging', 'production'];
-
-  constructor() {
+  constructor(opts: InitArgs) {
     this.config = {};
-    this.configUrl = 'www.happypath.io/config';
-    this.refreshIntervalSeconds = 30;
-    this.environment = '';
+    this.host = opts.host || 'www.happypath.io';
+    this.refreshIntervalSeconds = opts.refreshIntervalSeconds || 30;
+    this.apiKey = opts.apiKey;
+    this.logger = opts.logger || console.log;
+    this.fetcher = opts.fetcher || axios.get;
   }
 
-  async init(initArgs: InitArgs): Promise<void> {
-    const { apiKey, environment, refreshIntervalSeconds, configUrl } = initArgs;
-    this.apiKey = apiKey;
-    this.environment = environment;
-    this.configUrl = configUrl || this.configUrl;
-    this.refreshIntervalSeconds = refreshIntervalSeconds || this.refreshIntervalSeconds;
+  async init(): Promise<void> {
     await this.load();
     setInterval(this.load, this.refreshIntervalSeconds * 1000);
   }
@@ -47,32 +49,42 @@ class Client {
   }
 
   private validateInit(): void {
-    if (!!this.apiKey || !!Client.ENVIRONMENTS.includes(this.environment)) {
+    if (!this.apiKey) {
+      throw new Error('Missing API key');
+    }
+    if (!this.isConfigLoaded) {
       throw new Error(
-        'ClientNotInitialized: please set API key and environment via client.init'
+        'Config is not initialized. Did you forget to run "await config.init()"?'
       );
     }
   }
 
   private async load(): Promise<void> {
+    let response;
     try {
-      const res = await axios.get(this.configUrl, {
-        headers: {
-          API_KEY: this.apiKey,
-        },
-        params: {
-          environment: this.environment,
-        },
-      });
-      if (res.data) {
-        Object.assign(this.config, res.data);
-      }
-    } catch (_error) {}
+      response = await this.fetcher(
+        `${this.host}/configs/${this.apiKey}/config.json`
+      );
+    } catch (error) {
+      this.logger('Failed to fetch config', error);
+    }
+    const data = response?.data;
+    if (!data && !this.isConfigLoaded) {
+      throw new Error(`Invalid API key`);
+    }
+    if (data) {
+      Object.assign(this.config, data);
+      this.isConfigLoaded = true;
+    }
   }
 
   private isPresent(value?: unknown): boolean {
     return value !== undefined;
   }
+
+  static getClient(opts: InitArgs): Client {
+    return new Client(opts);
+  }
 }
 
-export default new Client();
+export default Client.getClient;

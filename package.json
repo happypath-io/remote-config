@@ -1,6 +1,6 @@
 {
   "name": "@happypath-io/remote-config",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Remote Config",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",

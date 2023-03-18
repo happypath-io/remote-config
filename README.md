@@ -1,8 +1,8 @@
 # HappyPath - Remote Config
 
-HappyPath gives developers a simple way to create and manage remote configuration files to control any part of your application from the cloud. Host  your own config file, or manage it in the cloud by creating a free account here: [app.happypath.io](https://app.happypath.io/#auth-sign-up)
+HappyPath provides developers with a simple way to create and manage remote configuration files to control any part of your application from the cloud. You can host your own config file or manage it in the cloud by creating a free account on our website: app.happypath.io.
 
-See docs, installation and examples here: [docs.happypath.io](https://docs.happypath.io)
+For more information, installation instructions, and examples, please visit our documentation website: docs.happypath.io.
 
 ## Installation
 
@@ -11,7 +11,7 @@ See docs, installation and examples here: [docs.happypath.io](https://docs.happy
 
 ## Configuration
 
-Import & initialize client
+Import and initialize the client by specifying the configuration options:
 ```
 import getClient from '@happypath-io/remote-config'
 
@@ -22,17 +22,17 @@ const remoteConfig = getClient({
 
 // Use local file
 const remoteConfig = getClient({
-  customFilePath: 'path/to/your/config.json',
+  filePath: 'path/to/your/config.json',
 })
 
 // Host your own config
 const remoteConfig = getClient({
-  customRemoteUrl: 'https://example.com/your-config.json',
+  remoteUrl: 'https://example.com/your-config.json',
 })
 
 // Provide config object
 const remoteConfig = getClient({
-  customConfig: {
+  config: {
     name: 'john doe',
     age: 30,
     otherAttributes: {
@@ -44,15 +44,21 @@ const remoteConfig = getClient({
   }
 })
 
-// Finally, initiallize config. This is an async function.
-await remoteConfig.init()
+// Finally, initiallize config. This is an async function. This can be done whenever app is initialized.
+await remoteConfig.init();
+
+// Alternatively, if you cannot await during initialization, you can await until it is loaded within your logic.
+remoteConfig.init();
+
+// Then, before usage:
+await remoteConfig.waitUntilLoaded();
 ```
 
 ## Usage
 
-By default, the client will refresh configuration every 30 seconds. You can override that by passing `refreshIntervalSeconds` during client initialization.
+By default, the client refreshes the configuration every 30 seconds. You can override this by passing the `refreshIntervalSeconds` parameter during client initialization.
 
-Client exposes single methods `get` which accepts `key` and optional default value. It returns corresponding value from config store. Note that value is not a promise.
+The client exposes a single method `get`, which accepts a `key` and an optional default value. It returns the corresponding value from the config store. Note that the value is not a promise.
 
 ```
 import remoteConfig from '@happypath-io/remote-config'
@@ -63,3 +69,5 @@ const age = remoteConfig.get<number>('age');
 const list = remoteConfig.get<string[]>('items', ['defaultValue']);
 const person = remoteConfig.get<Person>('person');
 ```
+
+Please feel free to contact us at support@happypath.io if you have any questions or issues.

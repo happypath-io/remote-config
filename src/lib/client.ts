@@ -7,9 +7,9 @@ export interface InitArgs {
   host?: string;
   logger?: (args: any) => void;
   fetcher?: (url: string) => Promise<Config>;
-  customRemoteUrl?: string;
-  customFilePath?: string;
-  customConfig?: Config;
+  remoteUrl?: string;
+  filePath?: string;
+  config?: Config;
 }
 
 interface Config {
@@ -26,8 +26,8 @@ class Client {
   private isConfigLoaded = false;
   private logger: (message: string, error: unknown) => void;
   private fetcher: (url: string) => Promise<Config>;
-  private customFilePath?: string;
-  private customRemoteUrl?: string;
+  private filePath?: string;
+  private remoteUrl?: string;
   private customConfig?: Config;
 
   constructor(opts: InitArgs) {
@@ -37,13 +37,13 @@ class Client {
       apiKey,
       logger = console.log,
       fetcher = Client.httpGet,
-      customConfig,
-      customFilePath,
-      customRemoteUrl,
+      config,
+      filePath,
+      remoteUrl,
     } = opts;
-    this.customFilePath = customFilePath;
-    this.customRemoteUrl = customRemoteUrl;
-    this.customConfig = customConfig;
+    this.filePath = filePath;
+    this.remoteUrl = remoteUrl;
+    this.customConfig = config;
     this.config = {};
     this.host = host;
     this.refreshIntervalSeconds = refreshIntervalSeconds;
@@ -83,18 +83,18 @@ class Client {
     });
   }
   getLoader(): Loader {
-    if (this.customFilePath) {
+    if (this.filePath) {
       return () => {
-        const data = require(this.customFilePath!);
+        const data = require(this.filePath!);
         if (!data) {
-          throw new RemoteConfigError(`Not valid JSON: ${this.customFilePath}`);
+          throw new RemoteConfigError(`Not valid JSON: ${this.filePath}`);
         }
         return data;
       };
     }
-    if (this.customRemoteUrl) {
+    if (this.remoteUrl) {
       return async () => {
-        const data = await this.fetcher(this.customRemoteUrl!);
+        const data = await this.fetcher(this.remoteUrl!);
         return data;
       };
     }

@@ -1,17 +1,19 @@
 # HappyPath - Remote Config
 
-HappyPath provides developers with a simple way to create and manage remote configuration files to control any part of your application from the cloud. You can host your own config file or manage it in the cloud by creating a free account on our website: [app.happypath.io](https://app.happypath.io/).
+HappyPath provides developers with a simple way to create and manage remote configuration files to control any part of your application from the cloud. You can host your own config file or manage it in the cloud by creating a free account on our website: [happypath.io](https://www.happypath.io/).
 
-For more information, installation instructions, and examples, please visit our documentation website: [docs.happypath.io](https://docs.happypath.io/).
+➡️ ➡️ For more information, installation instructions, and examples, please visit our documentation website: [docs.happypath.io](https://docs.happypath.io/).
 
 ## Installation
 
 ### Using NPM
+
 `npm install @happypath-io/remote-config`
 
 ## Configuration
 
 Import and initialize the client by specifying the configuration options:
+
 ```
 import getClient from '@happypath-io/remote-config'
 
@@ -70,4 +72,4 @@ const list = remoteConfig.get<string[]>('items', ['defaultValue']);
 const person = remoteConfig.get<Person>('person');
 ```
 
-Please feel free to contact us at support@happypath.io if you have any questions or issues.
+Please feel free to contact us at hello@happypath.io if you have any questions or issues.

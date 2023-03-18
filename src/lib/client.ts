@@ -58,13 +58,12 @@ class Client {
   }
 
   get<T>(key: string, defaultValue?: T): T {
-    this.validateInit();
     const value = this.config[key] as T;
     if (!this.isPresent(value) && this.isPresent(defaultValue)) {
       return defaultValue!;
     }
     if (!this.isPresent(value)) {
-      throw new RemoteConfigError(`Key is not defined in config: ${key}`);
+      this.logger(`Key is not defined in config: ${key}`, undefined);
     }
     return value;
   }
@@ -73,14 +72,16 @@ class Client {
     return this.config;
   }
 
-  private validateInit(): void {
-    if (!this.isConfigLoaded) {
-      throw new RemoteConfigError(
-        'Config is not initialized. Forgot to run "await config.init()" ?'
-      );
-    }
+  waitUntilLoaded(): Promise<void> {
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (this.isConfigLoaded) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
   }
-
   getLoader(): Loader {
     if (this.customFilePath) {
       return () => {

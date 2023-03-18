@@ -7,7 +7,7 @@
   "module": "build/module/index.js",
   "repository": "https://github.com/happypath-io/remote-config",
   "license": "MIT",
-  "keywords": ["Remote Configs", "Dynamic Configs", "Feature Flag"],
+  "keywords": ["Remote Configs", "Dynamic Configs", "Feature Flag", "Experiments", "Remote Configuration"],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",

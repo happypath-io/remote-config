@@ -1,8 +1,10 @@
 # HappyPath - Remote Config
 
-HappyPath provides developers with a simple way to create and manage remote configuration files to control any part of your application from the cloud. You can host your own config file or manage it in the cloud by creating a free account on our website: [happypath.io](https://www.happypath.io/).
+HappyPath provides developers with a simple way to create and manage remote configuration files to control any part of your application from the cloud. The values you change in your remote config will be updated on a specific time interval that you define, automatically.
 
-➡️ ➡️ For more information, installation instructions, and examples, please visit our documentation website: [docs.happypath.io](https://docs.happypath.io/).
+You can host your own config file or manage it in the cloud by creating a free account on our website: [happypath.io](https://www.happypath.io/).
+
+__➡️ ➡️ For more information, installation instructions, and examples, please visit our documentation website: [docs.happypath.io](https://docs.happypath.io/).__
 
 ## Installation
 

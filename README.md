@@ -76,7 +76,7 @@ const person = remoteConfig.get<Person>('person');
 
 ### JavaScript
 ```
-const remoteConfig require('@happypath-io/remote-config').default
+const remoteConfig = require('@happypath-io/remote-config').default
 
 const name = remoteConfig.get('name');
 const isEnabled = remoteConfig.get('isEnabled', false);

@@ -20,22 +20,22 @@ Import and initialize the client by specifying the configuration options:
 import getClient from '@happypath-io/remote-config'
 
 // Defaults to happypath.io configurations
-const remoteConfig = getClient({
+const client = getClient({
   apiKey: 'YOUR-API-KEY',
 })
 
 // Use local file
-const remoteConfig = getClient({
+const client = getClient({
   filePath: 'path/to/your/config.json',
 })
 
 // Host your own config
-const remoteConfig = getClient({
+const client = getClient({
   remoteUrl: 'https://example.com/your-config.json',
 })
 
 // Provide config object
-const remoteConfig = getClient({
+const client = getClient({
   config: {
     name: 'john doe',
     age: 30,
@@ -53,7 +53,6 @@ await remoteConfig.init();
 
 // Alternatively, if you cannot await during initialization, you can await until it is loaded within your logic.
 remoteConfig.init();
-
 // Then, before usage:
 await remoteConfig.waitUntilLoaded();
 ```
@@ -64,6 +63,7 @@ By default, the client refreshes the configuration every 30 seconds. You can ove
 
 The client exposes a single method `get`, which accepts a `key` and an optional default value. It returns the corresponding value from the config store. Note that the value is not a promise.
 
+### TypeScript
 ```
 import remoteConfig from '@happypath-io/remote-config'
 
@@ -72,6 +72,17 @@ const isEnabled = remoteConfig.get<boolean>('isEnabled', false);
 const age = remoteConfig.get<number>('age');
 const list = remoteConfig.get<string[]>('items', ['defaultValue']);
 const person = remoteConfig.get<Person>('person');
+```
+
+### JavaScript
+```
+const remoteConfig require('@happypath-io/remote-config').default
+
+const name = remoteConfig.get('name');
+const isEnabled = remoteConfig.get('isEnabled', false);
+const age = remoteConfig.get('age');
+const list = remoteConfig.get('items', ['defaultValue']);
+const person = remoteConfig.get('person');
 ```
 
 Please feel free to contact us at hello@happypath.io if you have any questions or issues.

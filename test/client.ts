@@ -30,6 +30,15 @@ test('Client initialization using API key', async (t) => {
   t.is(typeof age, 'number');
 });
 
+test('Getting default values', async (t) => {
+  const client = getClient({
+    apiKey: '1337',
+  });
+  await client.init();
+  const age = client.get<number>('nonExistentProperty', 30);
+  t.is(typeof age, 'number');
+});
+
 test('Client initialization using remote URL', async (t) => {
   const client = getClient({
     remoteUrl:

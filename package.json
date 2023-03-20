@@ -1,13 +1,19 @@
 {
   "name": "@happypath-io/remote-config",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Remote Config",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
   "repository": "https://github.com/happypath-io/remote-config",
   "license": "MIT",
-  "keywords": ["Remote Configs", "Dynamic Configs", "Feature Flag", "Experiments", "Remote Configuration"],
+  "keywords": [
+    "Remote Configs",
+    "Dynamic Configs",
+    "Feature Flag",
+    "Experiments",
+    "Remote Configuration"
+  ],
   "scripts": {
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
@@ -15,15 +21,17 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
-    "watch:build": "tsc -p tsconfig.json -w"
+    "watch:build": "tsc -p tsconfig.json -w",
+    "test": "ava"
   },
   "engines": {
     "node": ">=10"
   },
-  "dependencies": {},
   "devDependencies": {
+    "@ava/typescript": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
+    "ava": "^5.2.0",
     "cspell": "^6.26.3",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.34.0",
@@ -31,6 +39,7 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-functional": "^5.0.4",
     "eslint-plugin-import": "^2.27.5",
+    "esm": "^3.2.25",
     "npm-run-all": "^4.1.5",
     "open-cli": "^7.1.0",
     "prettier": "^2.8.4",
@@ -48,15 +57,11 @@
     "README.md"
   ],
   "ava": {
-    "failFast": true,
-    "timeout": "60s",
-    "typescript": {
-      "rewritePaths": {
-        "src/": "build/main/"
-      }
+    "extensions": {
+      "ts": "module"
     },
-    "files": [
-      "!build/module/**"
+    "nodeArguments": [
+      "--loader=ts-node/esm"
     ]
   },
   "config": {

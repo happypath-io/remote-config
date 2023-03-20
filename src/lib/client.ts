@@ -1,22 +1,18 @@
-import https from 'https';
 import { RemoteConfigError } from './errors';
+import { httpGet, isPresent } from './utils';
+import type { Config, Fetcher } from './types';
+import getLoader from './loaderFactory';
 
 export interface InitArgs {
-  apiKey: string;
+  apiKey?: string;
   refreshIntervalSeconds?: number;
   host?: string;
   logger?: (args: any) => void;
-  fetcher?: (url: string) => Promise<Config>;
+  fetcher?: Fetcher;
   remoteUrl?: string;
   filePath?: string;
   config?: Config;
 }
-
-interface Config {
-  [key: string]: unknown;
-}
-
-type Loader = () => Promise<Config | undefined>;
 
 class Client {
   private config: Config;
@@ -30,13 +26,15 @@ class Client {
   private remoteUrl?: string;
   private customConfig?: Config;
 
+  static VALID_CONFIG_OPTIONS = ['apiKey', 'filePath', 'remoteUrl', 'config'];
+
   constructor(opts: InitArgs) {
     const {
       host = 'https://storage.googleapis.com/happypath-public',
       refreshIntervalSeconds = 30,
       apiKey,
       logger = console.log,
-      fetcher = Client.httpGet,
+      fetcher = httpGet,
       config,
       filePath,
       remoteUrl,
@@ -59,10 +57,10 @@ class Client {
 
   get<T>(key: string, defaultValue?: T): T {
     const value = this.config[key] as T;
-    if (!this.isPresent(value) && this.isPresent(defaultValue)) {
+    if (!isPresent(value) && isPresent(defaultValue)) {
       return defaultValue!;
     }
-    if (!this.isPresent(value)) {
+    if (!isPresent(value)) {
       this.logger(`Key is not defined in config: ${key}`, undefined);
     }
     return value;
@@ -82,40 +80,17 @@ class Client {
       }, 100);
     });
   }
-  getLoader(): Loader {
-    if (this.filePath) {
-      return () => {
-        const data = require(this.filePath!);
-        if (!data) {
-          throw new RemoteConfigError(`Not valid JSON: ${this.filePath}`);
-        }
-        return data;
-      };
-    }
-    if (this.remoteUrl) {
-      return async () => {
-        const data = await this.fetcher(this.remoteUrl!);
-        return data;
-      };
-    }
-    if (this.customConfig) {
-      return () => Promise.resolve(this.customConfig);
-    }
-    return async () => {
-      if (!this.apiKey) {
-        throw new RemoteConfigError(
-          `No API key found. Please go to happypath.io to create one.`
-        );
-      }
-      const data = await this.fetcher(
-        `${this.host}/configs/${this.apiKey}/config.json`
-      );
-      return data;
-    };
-  }
 
   private async load(): Promise<void> {
-    const loader = this.getLoader();
+    const loader = getLoader({
+      filePath: this.filePath,
+      remoteUrl: this.remoteUrl,
+      customConfig: this.customConfig,
+      apiKey: this.apiKey,
+      host: this.host,
+      fetcher: this.fetcher,
+    });
+
     let data;
     try {
       data = await loader();
@@ -133,26 +108,15 @@ class Client {
     }
   }
 
-  private isPresent(value?: unknown): boolean {
-    return value !== undefined;
-  }
-
   static getClient(opts: InitArgs): Client {
+    if (!opts.apiKey && !opts.filePath && !opts.remoteUrl && !opts.config) {
+      throw new RemoteConfigError(
+        `No configuration options provided! Provide one of: ${Client.VALID_CONFIG_OPTIONS.join(
+          ', '
+        )}`
+      );
+    }
     return new Client(opts);
-  }
-
-  static httpGet(url: string): Promise<Config> {
-    return new Promise((resolve) => {
-      let data = '';
-      https.get(url, (res) => {
-        res.on('data', (chunk) => {
-          data += chunk;
-        });
-        res.on('end', () => {
-          resolve(JSON.parse(data));
-        });
-      });
-    });
   }
 }
 

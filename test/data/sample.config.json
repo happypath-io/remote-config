@@ -1,0 +1,15 @@
+{
+  "sample": "hello world!",
+  "age": 70,
+  "isFeatureEnabled": true,
+  "enabledStates": [
+    "CA",
+    "MD"
+  ],
+  "usersProperty": {
+    "admin": true,
+    "metadata": {
+      "size": "100Kb"
+    }
+  }
+}

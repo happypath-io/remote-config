@@ -49,12 +49,12 @@ const client = getClient({
 })
 
 // Finally, initiallize config. This is an async function. This can be done whenever app is initialized.
-await remoteConfig.init();
+await client.init();
 
 // Alternatively, if you cannot await during initialization, you can await until it is loaded within your logic.
-remoteConfig.init();
+client.init();
 // Then, before usage:
-await remoteConfig.waitUntilLoaded();
+await client.waitUntilLoaded();
 ```
 
 ## Usage
@@ -65,24 +65,20 @@ The client exposes a single method `get`, which accepts a `key` and an optional 
 
 ### TypeScript
 ```
-import remoteConfig from '@happypath-io/remote-config'
-
-const name = remoteConfig.get<string>('name');
-const isEnabled = remoteConfig.get<boolean>('isEnabled', false);
-const age = remoteConfig.get<number>('age');
-const list = remoteConfig.get<string[]>('items', ['defaultValue']);
-const person = remoteConfig.get<Person>('person');
+const name = client.get<string>('name');
+const isEnabled = client.get<boolean>('isEnabled', false);
+const age = client.get<number>('age');
+const list = client.get<string[]>('items', ['defaultValue']);
+const person = client.get<Person>('person');
 ```
 
 ### JavaScript
 ```
-const remoteConfig = require('@happypath-io/remote-config').default
-
-const name = remoteConfig.get('name');
-const isEnabled = remoteConfig.get('isEnabled', false);
-const age = remoteConfig.get('age');
-const list = remoteConfig.get('items', ['defaultValue']);
-const person = remoteConfig.get('person');
+const name = client.get('name');
+const isEnabled = client.get('isEnabled', false);
+const age = client.get('age');
+const list = client.get('items', ['defaultValue']);
+const person = client.get('person');
 ```
 
 Please feel free to contact us at hello@happypath.io if you have any questions or issues.

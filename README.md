@@ -21,7 +21,7 @@ import getClient from '@happypath-io/remote-config'
 
 // Defaults to happypath.io configurations
 const client = getClient({
-  apiKey: 'YOUR-API-KEY',
+  apiKey: 'YOUR-API-KEY', // get a free API key on app.happypath.io
 })
 
 // Use local file
